@@ -1,0 +1,28 @@
+server:
+  address: 10.43.103.229
+  port: 8080
+
+spring:
+  application:
+    name: microo
+  datasource:
+    url: jdbc:h2:file:./data/marketplace-db;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://10.43.103.229:8081/realms/marketplace
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://10.43.103.229:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: 10.43.103.229 
