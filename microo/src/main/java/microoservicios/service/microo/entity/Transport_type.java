@@ -11,6 +11,34 @@ public class Transport_type {
 
     private String type;
 
-    @OneToMany(mappedBy = "type_id")
+    @OneToMany(mappedBy = "type")
     private List<Transport> transportes = new ArrayList<>();
+
+    // Constructors
+    public Transport_type() {}
+
+    // Getters and Setters
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<Transport> getTransportes() {
+        return transportes;
+    }
+
+    public void setTransportes(List<Transport> transportes) {
+        this.transportes = transportes;
+    }
 }
