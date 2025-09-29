@@ -1,14 +1,16 @@
 server:
   address: localhost
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: microo
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
     url: jdbc:h2:mem:marketplace-db;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password:
+    password: password
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
@@ -23,12 +25,43 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://10.43.103.229:8081/realms/marketplace
+          issuer-uri: http://localhost:8180/realms/microservices-ecosystem
+          jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
 
+# Keycloak Configuration
+keycloak:
+  realm: microservices-ecosystem
+  auth-server-url: http://localhost:8180
+  ssl-required: external
+  resource: microo-service
+  credentials:
+    secret: XhzE490FVJwoJ3OdLlyyqpDyIaf1lgVe
+  use-resource-role-mappings: true
+  bearer-only: false  # Changed to false since this service handles login
+      
 eureka:
   client:
-    service-url:
-      defaultZone: http://10.43.103.229:8761/eureka/
-  instance:
+      service-url:
+        defaultZone: http://localhost:8761/eureka/
+  instance: 
     prefer-ip-address: true
-    ip-address: 10.43.103.229 
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+
+---
+# Profile for instance2 (port 8081)
+spring:
+  config:
+    activate:
+      on-profile: instance2
+server:
+  port: 8081
+
+---
+# Profile for instance3 (port 8082)  
+spring:
+  config:
+    activate:
+      on-profile: instance3
+server:
+  port: 8082
