@@ -1,0 +1,12 @@
+type Query {
+  services(title: String, minPrice: Float, maxPrice: Float): [ServiceEntity]
+  serviceById(id: ID!): ServiceEntity
+}
+
+type ServiceEntity {
+  id: ID
+  title: String
+  description: String
+  price: Float
+  averageRating: Float
+}
