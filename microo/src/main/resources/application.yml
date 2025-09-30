@@ -46,7 +46,7 @@ spring:
         serviceRequest-in-0:
           destination: service-request-topic
           content-type: application/json
-          group: services-microservice-group
+          #group: services-microservice-group
         # Producer binding for service responses TO orden-pago  
         serviceResponse-out-0:
           destination: service-response-topic
@@ -79,7 +79,7 @@ keycloak:
   ssl-required: external
   resource: microo-service
   credentials:
-    secret: XhzE490FVJwoJ3OdLlyyqpDyIaf1lgVe
+    secret: vbWn3RLXfcKVZ5zE7zOxf26XCnZxklxC
   use-resource-role-mappings: true
   bearer-only: false
       
