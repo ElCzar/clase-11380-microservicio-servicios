@@ -1,6 +1,7 @@
 package microoservicios.service.microo.controller;
 
 import microoservicios.service.microo.entity.ServiceEntity;
+import microoservicios.service.microo.kafka.ServiceKafkaProducer;
 import microoservicios.service.microo.services.MarketPlaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +15,11 @@ import java.util.*;
 public class ServiceController {
 
     private final MarketPlaceService marketPlaceService;
+    private final ServiceKafkaProducer kafkaProducer;
 
-    public ServiceController(MarketPlaceService marketPlaceService) {
+    public ServiceController(MarketPlaceService marketPlaceService, ServiceKafkaProducer kafkaProducer) {
         this.marketPlaceService = marketPlaceService;
+        this.kafkaProducer = kafkaProducer;
     }
 
     // Health check endpoint (public access)
@@ -43,23 +46,49 @@ public class ServiceController {
     @PostMapping
     @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity service, Authentication auth) {
-        return ResponseEntity.ok(marketPlaceService.create(service));
+        ServiceEntity createdService = marketPlaceService.create(service);
+        
+        // Publish Kafka event
+        String userId = (auth != null) ? auth.getName() : "system";
+        kafkaProducer.publishServiceCreated(createdService, userId);
+        
+        return ResponseEntity.ok(createdService);
     }
 
     // Update an existing service (providers and admins only)
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<ServiceEntity> updateService(@PathVariable UUID id, @RequestBody ServiceEntity service, Authentication auth) {
-        return marketPlaceService.update(id, service)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<ServiceEntity> updatedService = marketPlaceService.update(id, service);
+        
+        if (updatedService.isPresent()) {
+            // Publish Kafka event
+            String userId = (auth != null) ? auth.getName() : "system";
+            kafkaProducer.publishServiceUpdated(updatedService.get(), userId);
+            
+            return ResponseEntity.ok(updatedService.get());
+        }
+        
+        return ResponseEntity.notFound().build();
     }
 
     // Delete a service (providers and admins only)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteService(@PathVariable UUID id, Authentication auth) {
+        // Get the service before deletion for Kafka event
+        Optional<ServiceEntity> serviceToDelete = marketPlaceService.getById(id);
+        
         boolean deleted = marketPlaceService.delete(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        
+        if (deleted && serviceToDelete.isPresent()) {
+            // Publish Kafka event
+            String userId = (auth != null) ? auth.getName() : "system";
+            kafkaProducer.publishServiceDeleted(serviceToDelete.get(), userId);
+            
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.notFound().build();
     }
 }

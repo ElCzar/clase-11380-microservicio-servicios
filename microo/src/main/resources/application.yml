@@ -27,6 +27,23 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+        spring.json.value.default.type: com.fasterxml.jackson.databind.JsonNode
+    consumer:
+      group-id: microo-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.fasterxml.jackson.databind.JsonNode
 
 # Keycloak Configuration
 keycloak:
@@ -37,7 +54,7 @@ keycloak:
   credentials:
     secret: XhzE490FVJwoJ3OdLlyyqpDyIaf1lgVe
   use-resource-role-mappings: true
-  bearer-only: false  # Changed to false since this service handles login
+  bearer-only: false
       
 eureka:
   client:
@@ -47,6 +64,14 @@ eureka:
     prefer-ip-address: true
     ip-address: 127.0.0.1
     instance-id: ${spring.application.name}:${server.port}
+
+# Kafka Topics Configuration
+kafka:
+  topics:
+    service-events: marketplace.service.events
+    service-created: marketplace.service.created
+    service-updated: marketplace.service.updated
+    service-deleted: marketplace.service.deleted
 
 ---
 # Profile for instance2 (port 8081)
