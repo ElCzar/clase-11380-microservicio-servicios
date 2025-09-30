@@ -25,7 +25,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/microservices-ecosystem
+          #issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
   # Kafka Configuration with Spring Cloud Stream (matching orden-pago)
