@@ -28,7 +28,41 @@ spring:
           issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
-  # Kafka Configuration
+  # Kafka Configuration with Spring Cloud Stream (matching orden-pago)
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
+          configuration:
+            "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
+            "[value.serializer]": org.springframework.kafka.support.serializer.JsonSerializer
+            "[key.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
+            "[value.deserializer]": org.springframework.kafka.support.serializer.JsonDeserializer
+            "[spring.json.trusted.packages]": "*"
+      bindings:
+        # Consumer binding for service requests FROM orden-pago
+        serviceRequest-in-0:
+          destination: service-request-topic
+          content-type: application/json
+          group: services-microservice-group
+        # Producer binding for service responses TO orden-pago  
+        serviceResponse-out-0:
+          destination: service-response-topic
+          content-type: application/json
+        # Existing event publishers (keep these)
+        serviceCreated-out-0:
+          destination: marketplace.service.created
+          content-type: application/json
+        serviceUpdated-out-0:
+          destination: marketplace.service.updated
+          content-type: application/json
+        serviceDeleted-out-0:
+          destination: marketplace.service.deleted
+          content-type: application/json
+  
+  # Keep original Kafka for existing event publishing
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -36,13 +70,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
-        spring.json.value.default.type: com.fasterxml.jackson.databind.JsonNode
-    consumer:
-      group-id: microo-service-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.fasterxml.jackson.databind.JsonNode
 
 # Keycloak Configuration
@@ -65,13 +92,16 @@ eureka:
     ip-address: 127.0.0.1
     instance-id: ${spring.application.name}:${server.port}
 
-# Kafka Topics Configuration
+# Kafka Topics Configuration  
 kafka:
   topics:
     service-events: marketplace.service.events
     service-created: marketplace.service.created
     service-updated: marketplace.service.updated
     service-deleted: marketplace.service.deleted
+    # Request-Response topics for orden-pago communication
+    service-request: service-request-topic
+    service-response: service-response-topic
 
 ---
 # Profile for instance2 (port 8081)
