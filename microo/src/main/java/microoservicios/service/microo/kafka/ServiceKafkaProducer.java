@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @deprecated Use {@link ServiceEventPublisher} instead. 
+ * This class uses direct KafkaTemplate approach while the new approach 
+ * uses Spring Cloud Stream with StreamBridge and bindings.
+ */
+@Deprecated
 @Service
 public class ServiceKafkaProducer {
     

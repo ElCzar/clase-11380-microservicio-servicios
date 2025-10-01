@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: microo
+    name: microservicio-servicios
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
@@ -51,7 +51,11 @@ spring:
         serviceResponse-out-0:
           destination: service-response-topic
           content-type: application/json
-        # Existing event publishers (keep these)
+        # Main event publisher (unified binding for all service events)
+        serviceEvents-out-0:
+          destination: marketplace.service.events
+          content-type: application/json
+        # Existing event publishers (keep for backwards compatibility)
         serviceCreated-out-0:
           destination: marketplace.service.created
           content-type: application/json
@@ -62,16 +66,6 @@ spring:
           destination: marketplace.service.deleted
           content-type: application/json
   
-  # Keep original Kafka for existing event publishing
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: false
-        spring.json.value.default.type: com.fasterxml.jackson.databind.JsonNode
-
 # Keycloak Configuration
 keycloak:
   realm: microservices-ecosystem
@@ -83,15 +77,21 @@ keycloak:
   use-resource-role-mappings: true
   bearer-only: false
       
+# Eureka Client Configuration
 eureka:
   client:
-      enabled: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    enabled: true
   instance: 
     prefer-ip-address: true
-    ip-address: 127.0.0.1
+    hostname: localhost
     instance-id: ${spring.application.name}:${server.port}
+    health-check-url-path: /actuator/health
 
-# Kafka Topics Configuration  
+# Kafka Topics Configuration (custom properties for topic names)
 kafka:
   topics:
     service-events: marketplace.service.events

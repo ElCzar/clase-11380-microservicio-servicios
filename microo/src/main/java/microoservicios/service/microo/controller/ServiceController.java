@@ -1,7 +1,8 @@
 package microoservicios.service.microo.controller;
 
+import microoservicios.service.microo.dto.ServiceEventDto;
 import microoservicios.service.microo.entity.ServiceEntity;
-import microoservicios.service.microo.kafka.ServiceKafkaProducer;
+import microoservicios.service.microo.kafka.ServiceEventPublisher;
 import microoservicios.service.microo.services.MarketPlaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,11 +16,11 @@ import java.util.*;
 public class ServiceController {
 
     private final MarketPlaceService marketPlaceService;
-    private final ServiceKafkaProducer kafkaProducer;
+    private final ServiceEventPublisher eventPublisher;
 
-    public ServiceController(MarketPlaceService marketPlaceService, ServiceKafkaProducer kafkaProducer) {
+    public ServiceController(MarketPlaceService marketPlaceService, ServiceEventPublisher eventPublisher) {
         this.marketPlaceService = marketPlaceService;
-        this.kafkaProducer = kafkaProducer;
+        this.eventPublisher = eventPublisher;
     }
 
     // Health check endpoint (public access)
@@ -48,9 +49,20 @@ public class ServiceController {
     public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity service, Authentication auth) {
         ServiceEntity createdService = marketPlaceService.create(service);
         
-        // Publish Kafka event
+        // Construir DTO de evento
         String userId = (auth != null) ? auth.getName() : "system";
-        kafkaProducer.publishServiceCreated(createdService, userId);
+        ServiceEventDto event = new ServiceEventDto(
+            createdService.getId(),
+            createdService.getTitle(),
+            createdService.getDescription(),
+            createdService.getPrice() != null ? createdService.getPrice().doubleValue() : null,
+            createdService.getAverageRating(),
+            "CREATED",
+            userId
+        );
+        
+        // Publicar en Kafka vía binding serviceEvents-out-0
+        eventPublisher.publishEvent(event);
         
         return ResponseEntity.ok(createdService);
     }
@@ -62,9 +74,20 @@ public class ServiceController {
         Optional<ServiceEntity> updatedService = marketPlaceService.update(id, service);
         
         if (updatedService.isPresent()) {
-            // Publish Kafka event
+            // Construir DTO de evento
             String userId = (auth != null) ? auth.getName() : "system";
-            kafkaProducer.publishServiceUpdated(updatedService.get(), userId);
+            ServiceEventDto event = new ServiceEventDto(
+                updatedService.get().getId(),
+                updatedService.get().getTitle(),
+                updatedService.get().getDescription(),
+                updatedService.get().getPrice() != null ? updatedService.get().getPrice().doubleValue() : null,
+                updatedService.get().getAverageRating(),
+                "UPDATED",
+                userId
+            );
+            
+            // Publicar en Kafka vía binding serviceEvents-out-0
+            eventPublisher.publishEvent(event);
             
             return ResponseEntity.ok(updatedService.get());
         }
@@ -82,9 +105,20 @@ public class ServiceController {
         boolean deleted = marketPlaceService.delete(id);
         
         if (deleted && serviceToDelete.isPresent()) {
-            // Publish Kafka event
+            // Construir DTO de evento
             String userId = (auth != null) ? auth.getName() : "system";
-            kafkaProducer.publishServiceDeleted(serviceToDelete.get(), userId);
+            ServiceEventDto event = new ServiceEventDto(
+                serviceToDelete.get().getId(),
+                serviceToDelete.get().getTitle(),
+                serviceToDelete.get().getDescription(),
+                serviceToDelete.get().getPrice() != null ? serviceToDelete.get().getPrice().doubleValue() : null,
+                serviceToDelete.get().getAverageRating(),
+                "DELETED",
+                userId
+            );
+            
+            // Publicar en Kafka vía binding serviceEvents-out-0
+            eventPublisher.publishEvent(event);
             
             return ResponseEntity.noContent().build();
         }
