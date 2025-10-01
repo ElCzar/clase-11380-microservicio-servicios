@@ -45,7 +45,7 @@ public class ServiceController {
 
     // Create a new service (providers and admins only)
     @PostMapping
-    @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'PROVIDER')")
     public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity service, Authentication auth) {
         ServiceEntity createdService = marketPlaceService.create(service);
         

@@ -1,0 +1,87 @@
+
+### ### Login with Basic User
+# @name loginUser
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "testprovider",
+  "password": "password123"
+}
+
+### 1.2: Register a Provider (with additional provider fields)
+# @name registerProvider
+POST http://localhost:8081/auth/register/provider
+Content-Type: application/json
+
+{
+  "username": "testprovider",
+  "email": "provider@example.com",
+  "firstName": "Test",
+  "lastName": "Provider",
+  "password": "password123",
+  "age": 30,
+  "photo": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+  "description": "Test provider for authentication testing",
+  "phone": "+1234567890",
+  "webPage": "https://testprovider.com",
+  "socialMediaContact": "@testprovider"
+}
+
+
+###
+
+# Variables de entorno
+@baseUrl = http://localhost:8083
+@authToken = Bearer {{ loginUser.response.body.accessToken }}
+
+###
+
+### Verificar la salud del servicio
+GET {{ baseUrl }}/actuator/health
+Content-Type: application/json
+
+###
+# Salud del servicio
+GET {{ baseUrl }}/api/v1/services/health
+Authorization: {{ authToken }}
+###
+
+
+# Crear servicio
+POST {{ baseUrl }}/api/v1/services
+Authorization: {{ authToken }}
+Content-Type: application/json
+
+{
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "title": "Servicio",
+    "description": "Descripción del servicio",
+    "price": 100.0,
+    "averageRating": 4.5,
+    "category": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "name": "Categoría Ejemplo"
+    },
+    "status": {
+        "id": "550e8400-e29b-41d4-a716-446655440002",
+        "name": "Disponible"
+    },
+    "country": {
+        "id": "550e8400-e29b-41d4-a716-446655440003",
+        "name": "País Ejemplo"
+    },
+    "images": [
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440004",
+            "url": "http://example.com/image1.jpg",
+            "displayOrder": 1
+        },
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440005",
+            "url": "http://example.com/image2.jpg",
+            "displayOrder": 2
+        }
+    ]
+
+}
