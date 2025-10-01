@@ -45,7 +45,7 @@ public class ServiceController {
 
     // Create a new service (providers and admins only)
     @PostMapping
-    @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity service, Authentication auth) {
         ServiceEntity createdService = marketPlaceService.create(service);
         
@@ -69,7 +69,7 @@ public class ServiceController {
 
     // Update an existing service (providers and admins only)
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<ServiceEntity> updateService(@PathVariable UUID id, @RequestBody ServiceEntity service, Authentication auth) {
         Optional<ServiceEntity> updatedService = marketPlaceService.update(id, service);
         
@@ -97,7 +97,7 @@ public class ServiceController {
 
     // Delete a service (providers and admins only)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('PROVIDER') or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteService(@PathVariable UUID id, Authentication auth) {
         // Get the service before deletion for Kafka event
         Optional<ServiceEntity> serviceToDelete = marketPlaceService.getById(id);

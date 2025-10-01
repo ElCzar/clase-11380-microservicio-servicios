@@ -1,0 +1,162 @@
+### Pruebas de endpoints del Marketplace de Servicios
+### Microservicio: microo-service (ServiceController)
+### Puerto: 8080
+
+# Variables de entorno
+@baseUrl = http://localhost:8080
+@keycloakUrl = http://localhost:8180
+@realm = microservices-ecosystem
+@client_id = perfil-service
+@client_secret = XhzE490FVJwoJ3OdLlyyqpDyIaf1lgVe
+@username = testuser
+@password = testpassword
+
+#########################################################################
+# SECCIÓN 1: AUTENTICACIÓN CON KEYCLOAK
+#########################################################################
+
+### PASO 1: Obtener token JWT de Keycloak
+# @name getToken
+POST {{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username={{username}}&password={{password}}&client_id={{client_id}}&client_secret={{client_secret}}
+
+###
+
+# Reutilizar el token
+@authToken = Bearer {{getToken.response.body.access_token}}
+
+#########################################################################
+# SECCIÓN 2: VERIFICACIÓN DE SALUD Y SERVICIOS INICIALES
+#########################################################################
+
+### 1. Verificar salud del servicio
+GET {{baseUrl}}/api/v1/services/health
+Authorization: {{authToken}}
+
+###
+
+### 2. Obtener todos los servicios (debe estar vacío inicialmente)
+# @name getAllServices
+GET {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+
+###
+
+### 3. Buscar servicio por ID (debe retornar 404 para servicio inexistente)
+GET {{baseUrl}}/api/v1/services/550e8400-e29b-41d4-a716-446655440000
+Authorization: {{authToken}}
+
+###
+
+#########################################################################
+# SECCIÓN 3: CREAR SERVICIOS EN EL MARKETPLACE
+#########################################################################
+
+### 4. Crear primer servicio - Desarrollo Web
+# @name createWebService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Desarrollo Web Profesional",
+  "description": "Servicios de desarrollo web",
+  "price": 299.99,
+  "category": { "id": "550e8400-e29b-41d4-a716-446655449999" }, 
+  "providerId": "550e8400-e29b-41d4-a716-446655440001",
+  "isActive": true,
+  "averageRating": 4.5
+}
+
+
+###
+
+### 5. Crear segundo servicio - Desarrollo Móvil
+# @name createMobileService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Desarrollo de Apps Móviles",
+  "description": "Desarrollo de aplicaciones nativas y multiplataforma para iOS y Android",
+  "price": 499.99,
+  "category": "TECHNOLOGY", 
+  "providerId": "550e8400-e29b-41d4-a716-446655440002",
+  "isActive": true,
+  "averageRating": 4.8
+}
+
+###
+
+### 6. Crear tercer servicio - Consultoría IT
+# @name createConsultingService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Consultoría en Tecnología",
+  "description": "Asesoramiento especializado en arquitectura de software y transformación digital",
+  "price": 150.00,
+  "category": "BUSINESS",
+  "providerId": "550e8400-e29b-41d4-a716-446655440003",
+  "isActive": true,
+  "averageRating": 4.9
+}
+
+###
+
+### 7. Verificar servicios creados
+# @name servicesAfterCreation
+GET {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+
+###
+
+#########################################################################
+# SECCIÓN 4: OBTENER SERVICIOS ESPECÍFICOS
+#########################################################################
+
+### 8. Obtener servicio web por ID
+GET {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+Authorization: {{authToken}}
+
+###
+
+### 9. Obtener servicio móvil por ID
+GET {{baseUrl}}/api/v1/services/{{createMobileService.response.body.id}}
+Authorization: {{authToken}}
+
+###
+
+### 10. Obtener servicio de consultoría por ID
+GET {{baseUrl}}/api/v1/services/{{createConsultingService.response.body.id}}
+Authorization: {{authToken}}
+
+###
+
+#########################################################################
+# SECCIÓN 5: ACTUALIZAR SERVICIOS
+#########################################################################
+
+### 11. Actualizar precio y descripción del servicio web
+# @name updateWebService
+PUT {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Desarrollo Web Profesional - ACTUALIZADO",
+  "description": "Servicios premium de desarrollo web con tecnologías de última generación y soporte completo",
+  "price": 349.99,
+  "category": "TECHNOLOGY",
+  "providerId": "550e8400-e29b-41d4-a716-446655440001",
+  "isActive": true,
+  "averageRating": 4.7
+}
+
+###
+
