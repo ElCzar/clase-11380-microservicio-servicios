@@ -61,6 +61,31 @@ public class ServiceController {
         return ResponseEntity.ok(toResponseDto(createdService));
     }
 
+    @PostMapping("/publish-all")
+    public ResponseEntity<String> publishAll(Authentication auth) {
+        List<ServiceEntity> services = marketPlaceService.getAll();
+
+        String userId = (auth != null) ? auth.getName() : "system";
+
+        // Convertimos cada entidad en un DTO de evento
+        List<ServiceEventDto> events = services.stream()
+                .map(service -> new ServiceEventDto(
+                        service.getId(),
+                        service.getTitle(),
+                        service.getDescription(),
+                        service.getPrice() != null ? service.getPrice().doubleValue() : null,
+                        service.getAverageRating(),
+                        "PUBLISH_ALL",
+                        userId
+                ))
+                .toList();
+
+            eventPublisher.publishEvents(events);
+
+            return ResponseEntity.ok("✅ Se publicaron " + events.size() + " servicios en Kafka.");
+        }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponseDto> updateService(@PathVariable UUID id,
                                                             @RequestBody ServiceRequestDto dto,
@@ -92,25 +117,18 @@ public class ServiceController {
 
     // ---------- Helpers ----------
     private void publishEvent(ServiceEntity service, String action, Authentication auth) {
-    String userId = (auth != null) ? auth.getName() : "system";
-
-    switch (action) {
-        case "CREATED":
-            eventPublisher.publishServiceCreated(service, userId);
-            break;
-        case "UPDATED":
-            eventPublisher.publishServiceUpdated(service, userId);
-            break;
-        case "DELETED":
-            eventPublisher.publishServiceDeleted(service, userId);
-            break;
-        default:
-            // Opcional: log de advertencia si llega algo inesperado
-            System.out.println("⚠️ Acción desconocida: " + action + " para el servicio " + service.getId());
-            break;
-        }
+        String userId = (auth != null) ? auth.getName() : "system";
+        ServiceEventDto event = new ServiceEventDto(
+                service.getId(),
+                service.getTitle(),
+                service.getDescription(),
+                service.getPrice() != null ? service.getPrice().doubleValue() : null,
+                service.getAverageRating(),
+                action,
+                userId
+        );
+        eventPublisher.publishEvent(event);
     }
-
 
     private ServiceResponseDto toResponseDto(ServiceEntity entity) {
         ServiceResponseDto dto = new ServiceResponseDto();
