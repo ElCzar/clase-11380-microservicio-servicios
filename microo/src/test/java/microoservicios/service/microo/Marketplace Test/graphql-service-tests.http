@@ -1,0 +1,396 @@
+### Pruebas de GraphQL para el Marketplace de Servicios
+### Microservicio: microo-service (GraphQL)
+### Puerto: 8083
+
+# Variables de entorno
+@baseUrl = http://localhost:8083
+@keycloakUrl = http://localhost:8180
+@realm = microservices-ecosystem
+@client_id = perfil-service
+@client_secret = XhzE490FVJwoJ3OdLlyyqpDyIaf1lgVe
+@username = testuser
+@password = testpassword
+
+#########################################################################
+# SECCIÓN 1: AUTENTICACIÓN CON KEYCLOAK
+#########################################################################
+
+### PASO 1: Obtener token JWT de Keycloak
+# @name getToken
+
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+    "username": "testprovider",
+    "password": "password123"
+}
+
+###
+
+# Reutilizar el token
+@authToken = Bearer {{getToken.response.body.accessToken}}
+
+#########################################################################
+# SECCIÓN 2: CONFIGURACIÓN DE DATOS - CREAR SERVICIOS TURÍSTICOS VIA REST
+#########################################################################
+
+### 1. Crear primer servicio turístico - City Tour
+# @name createCityTourService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "City Tour Historical Downtown",
+  "description": "Guided walking tour through the historic downtown area with professional multilingual guide. Includes visits to main monuments, museums, and local attractions.",
+  "price": 45.50,
+  "averageRating": 4.7
+}
+
+###
+
+### 2. Crear segundo servicio turístico - Adventure Tour
+# @name createAdventureTourService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Mountain Adventure Hiking",
+  "description": "Full-day mountain hiking adventure with experienced guides. Includes equipment, lunch, and transportation. Perfect for nature lovers and adventure seekers.",
+  "price": 89.99,
+  "averageRating": 4.8
+}
+
+###
+
+### 3. Crear tercer servicio turístico - Gastronomic Experience
+# @name createGastronomicService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Local Gastronomic Experience",
+  "description": "Authentic culinary tour featuring traditional local cuisine. Visit local markets, family restaurants, and enjoy cooking classes with local chefs.",
+  "price": 65.00,
+  "averageRating": 4.6
+}
+
+###
+
+### 4. Crear cuarto servicio turístico - Beach Activities
+# @name createBeachService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Beach Water Sports Package",
+  "description": "Complete beach experience with water sports activities including surfing lessons, kayak rental, snorkeling equipment, and beach volleyball.",
+  "price": 120.00,
+  "averageRating": 4.4
+}
+
+###
+
+### 5. Crear quinto servicio turístico - Cultural Workshop
+# @name createCulturalService
+POST {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Traditional Crafts Workshop",
+  "description": "Hands-on workshop learning traditional local crafts from master artisans. Includes materials, instruction, and take-home pieces.",
+  "price": 35.75,
+  "averageRating": 4.5
+}
+
+###
+
+#########################################################################
+# SECCIÓN 3: PRUEBAS GRAPHQL - CONSULTAS BÁSICAS
+#########################################################################
+
+### 5. GraphQL - Obtener todos los servicios (sin filtros)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services { id title description price averageRating } }"
+}
+
+###
+
+### 6. GraphQL - Obtener servicios con campos específicos
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services { id title price } }"
+}
+
+###
+
+### 7. GraphQL - Buscar servicios por título (filtro de texto)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"Tour\") { id title description price averageRating } }"
+}
+
+###
+
+### 8. GraphQL - Buscar servicios por título específico
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"Beach\") { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 4: PRUEBAS GRAPHQL - FILTROS POR PRECIO
+#########################################################################
+
+### 9. GraphQL - Filtrar servicios por precio mínimo (tours premium >= 80)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: 80.0) { id title description price averageRating } }"
+}
+
+###
+
+### 10. GraphQL - Filtrar servicios por precio máximo (tours económicos <= 50)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(maxPrice: 50.0) { id title description price averageRating } }"
+}
+
+###
+
+### 11. GraphQL - Filtrar servicios por rango de precio medio (40-90)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: 40.0, maxPrice: 90.0) { id title description price averageRating } }"
+}
+
+###
+
+### 12. GraphQL - Filtrar servicios económicos (menos de 40)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(maxPrice: 40.0) { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 5: PRUEBAS GRAPHQL - CONSULTAS COMBINADAS
+#########################################################################
+
+### 13. GraphQL - Filtro combinado: título y precio mínimo
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"Adventure\", minPrice: 50.0) { id title description price averageRating } }"
+}
+
+###
+
+### 14. GraphQL - Filtro combinado: título y rango de precio
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"Experience\", minPrice: 30.0, maxPrice: 70.0) { id title description price averageRating } }"
+}
+
+###
+
+### 15. GraphQL - Todos los filtros aplicados
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"Tour\", minPrice: 40.0, maxPrice: 100.0) { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 6: PRUEBAS GRAPHQL - CONSULTAS POR ID
+#########################################################################
+
+### 16. GraphQL - Buscar servicio por ID específico (usar ID del City Tour)
+# Nota: Reemplazar el ID con uno válido obtenido de las consultas anteriores
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { serviceById(id: \"{{createCityTourService.response.body.id}}\") { id title description price averageRating } }"
+}
+
+###
+
+### 17. GraphQL - Buscar servicio por ID con campos limitados (Adventure Tour)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { serviceById(id: \"{{createAdventureTourService.response.body.id}}\") { id title price } }"
+}
+
+###
+
+### 18. GraphQL - Buscar servicio por ID inexistente
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { serviceById(id: \"550e8400-e29b-41d4-a716-446655440000\") { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 7: PRUEBAS GRAPHQL - CASOS EDGE Y VALIDACIONES
+#########################################################################
+
+### 19. GraphQL - Consulta con filtros vacíos
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"\") { id title description price averageRating } }"
+}
+
+###
+
+### 20. GraphQL - Consulta con precio negativo
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: -100.0) { id title description price averageRating } }"
+}
+
+###
+
+### 21. GraphQL - Consulta con rango de precio inválido (mínimo mayor que máximo)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: 500.0, maxPrice: 100.0) { id title description price averageRating } }"
+}
+
+###
+
+### 22. GraphQL - Consulta con título que no existe
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(title: \"SpaceTravel\") { id title description price averageRating } }"
+}
+
+###
+
+### 23. GraphQL - Consulta con precio muy alto (sin resultados esperados para turismo)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: 1000.0) { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 8: PRUEBAS GRAPHQL - CONSULTAS MALFORMADAS
+#########################################################################
+
+### 24. GraphQL - Query con sintaxis incorrecta
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services { id title price"
+}
+
+###
+
+### 25. GraphQL - Query con campo inexistente
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services { id title nonExistentField } }"
+}
+
+###
+
+### 26. GraphQL - Query con tipo de argumento incorrecto
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { services(minPrice: \"invalid\") { id title price } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 9: PRUEBAS GRAPHQL - INTROSPECCIÓN
+#########################################################################
+
+### 27. GraphQL - Consulta de introspección del esquema
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { __schema { types { name } } }"
+}
+
+###
+
+### 28. GraphQL - Consulta de tipo específico
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "query { __type(name: \"ServiceEntity\") { name fields { name type { name } } } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 10: LIMPIEZA - OPCIONAL
+#########################################################################
+
+### 29. REST - Verificar servicios creados antes de limpieza
+GET {{baseUrl}}/api/v1/services
+Authorization: {{authToken}}
+
+###
+
+### 30. REST - Eliminar servicio de prueba (opcional - City Tour)
+# DELETE {{baseUrl}}/api/v1/services/{{createCityTourService.response.body.id}}
+# Authorization: {{authToken}}
+
+###

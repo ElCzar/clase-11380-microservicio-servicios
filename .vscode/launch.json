@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MicrooApplication<microo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "microoservicios.service.microo.MicrooApplication",
+            "projectName": "microo",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
