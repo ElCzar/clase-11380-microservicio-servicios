@@ -37,7 +37,10 @@ public class MinimalSecurityConfig {
                                                 // Endpoints públicos
                                                 .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers("/h2-console/**").permitAll()
-
+                                                // GraphQL endpoints for testing
+                                                .requestMatchers("/graphql").permitAll()
+                                                .requestMatchers("/graphiql").permitAll()
+                                                .requestMatchers("/graphiql/**").permitAll()
 
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2

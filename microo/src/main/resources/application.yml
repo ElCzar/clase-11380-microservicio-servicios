@@ -21,6 +21,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  graphql:
+    graphiql:
+      enabled: true
   security:
     oauth2:
       resourceserver:
@@ -65,6 +68,7 @@ spring:
         serviceDeleted-out-0:
           destination: marketplace.service.deleted
           content-type: application/json
+        
   
 # Keycloak Configuration
 keycloak:
