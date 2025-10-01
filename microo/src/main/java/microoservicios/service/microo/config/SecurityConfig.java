@@ -20,9 +20,9 @@ import java.util.stream.Stream;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-public class MinimalSecurityConfig {
+public class SecurityConfig {
 
-    @Bean
+        @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(csrf -> csrf
@@ -37,6 +37,7 @@ public class MinimalSecurityConfig {
                                                 // Endpoints públicos
                                                 .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers("/h2-console/**").permitAll()
+
                                                 // GraphQL endpoints for testing
                                                 .requestMatchers("/graphql").permitAll()
                                                 .requestMatchers("/graphiql").permitAll()
@@ -73,4 +74,5 @@ public class MinimalSecurityConfig {
 
                 return converter;
         }
+
 }

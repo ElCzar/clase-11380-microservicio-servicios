@@ -4,6 +4,7 @@ import microoservicios.service.microo.entity.ServiceEntity;
 import microoservicios.service.microo.repository.ServiceRepository;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class ServiceGraphQlController {
     }
 
     @QueryMapping
+    @PreAuthorize("permitAll()")
     public List<ServiceEntity> services(@Argument String title,
                                         @Argument Double minPrice,
                                         @Argument Double maxPrice) {
@@ -26,6 +28,7 @@ public class ServiceGraphQlController {
 
 
     @QueryMapping
+    @PreAuthorize("permitAll()")
     public ServiceEntity serviceById(@Argument String id) {
         return repository.findById(java.util.UUID.fromString(id)).orElse(null);
     }

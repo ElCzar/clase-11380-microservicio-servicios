@@ -74,12 +74,12 @@ spring:
 keycloak:
   realm: microservices-ecosystem
   auth-server-url: http://localhost:8180
-  ssl-required: external
-  resource: microo-service
+  ssl-required: none
+  resource: servicios-service
   credentials:
     secret: vbWn3RLXfcKVZ5zE7zOxf26XCnZxklxC
   use-resource-role-mappings: true
-  bearer-only: false
+  bearer-only: true
       
 # Eureka Client Configuration
 eureka:
@@ -105,4 +105,11 @@ kafka:
     # Request-Response topics for orden-pago communication
     service-request: service-request-topic
     service-response: service-response-topic
+
+# Logging configuration for debugging JWT issues
+logging:
+  level:
+    "[org.springframework.security]": DEBUG
+    "[org.springframework.security.oauth2]": DEBUG
+    "[org.springframework.security.web]": DEBUG
 

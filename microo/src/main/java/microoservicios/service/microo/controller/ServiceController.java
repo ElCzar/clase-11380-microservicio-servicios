@@ -7,6 +7,7 @@ import microoservicios.service.microo.entity.*;
 import microoservicios.service.microo.kafka.ServiceEventPublisher;
 import microoservicios.service.microo.services.MarketPlaceService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ public class ServiceController {
     }
 
     @GetMapping("/health")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Marketplace Service is running");
     }
