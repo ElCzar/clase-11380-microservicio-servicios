@@ -1,6 +1,6 @@
 ### Pruebas de endpoints del Marketplace de Servicios
 ### Microservicio: microo-service (ServiceController)
-### Puerto: 8080
+### Puerto: 8083
 
 # Variables de entorno
 @baseUrl = http://localhost:8083
@@ -167,5 +167,134 @@ Content-Type: application/json
   "averageRating": 4.7
 }
 
+
+#########################################################################
+# SECCIÓN 6: GRAPHQL TESTS
+#########################################################################
+
+### 13. GraphQL - Obtener todos los servicios
+# @name getAllServicesGraphQL
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ services { id title description price averageRating } }"
+}
+
+###
+
+### 14. GraphQL - Obtener servicios con filtro por título
+# @name getServicesWithTitleFilter
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ services(title: \"Web\") { id title description price averageRating } }"
+}
+
+###
+
+### 15. GraphQL - Obtener servicios con filtro de precio
+# @name getServicesWithPriceFilter
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ services(minPrice: 200.0, maxPrice: 400.0) { id title description price averageRating } }"
+}
+
+###
+
+### 16. GraphQL - Obtener servicio específico por ID
+# @name getServiceByIdGraphQL
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ serviceById(id: \"{{createWebService.response.body.id}}\") { id title description price averageRating } }"
+}
+
+###
+
+### 17. GraphQL - Query con múltiples filtros
+# @name getServicesMultipleFilters
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ services(title: \"Desarrollo\", minPrice: 100.0, maxPrice: 500.0) { id title description price averageRating } }"
+}
+
+###
+
+### 18. GraphQL - Query con variables (formato alternativo)
+# @name getServiceWithVariables
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "query GetService($serviceId: ID!) { serviceById(id: $serviceId) { id title description price averageRating } }",
+  "variables": {
+    "serviceId": "{{createWebService.response.body.id}}"
+  }
+}
+
+###
+
+### 19. GraphQL - Consulta compleja con alias
+# @name getServicesWithAlias
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ cheapServices: services(maxPrice: 200.0) { id title price } expensiveServices: services(minPrice: 400.0) { id title price } }"
+}
+
+###
+
+### 20. GraphQL - Verificar servicio que no existe
+# @name getNonExistentService
+POST {{baseUrl}}/graphql
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "{ serviceById(id: \"550e8400-e29b-41d4-a716-446655440000\") { id title description price averageRating } }"
+}
+
+###
+
+#########################################################################
+# SECCIÓN 7: GRAPHQL - TESTS SIN AUTENTICACIÓN (SI GRAPHQL ES PÚBLICO)
+#########################################################################
+
+### 21. GraphQL Sin Auth - Obtener todos los servicios
+# @name getAllServicesGraphQLNoAuth
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "{ services { id title price } }"
+}
+
+###
+
+### 22. GraphQL Sin Auth - Obtener servicio por ID
+# @name getServiceByIdNoAuth
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+
+{
+  "query": "{ serviceById(id: \"{{createWebService.response.body.id}}\") { id title price } }"
+}
+
+###
 ###
 
