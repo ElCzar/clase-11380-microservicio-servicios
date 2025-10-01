@@ -10,42 +10,33 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class ServiceEventPublisher {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ServiceEventPublisher.class);
-    
+
     private final StreamBridge streamBridge;
-    
-    @Value("${spring.cloud.stream.bindings.serviceEvents-out-0.destination:marketplace.service.events}")
-    private String bindingDestination;
-    
-    // Binding name for the unified events channel
-    private static final String BINDING_NAME = "serviceEvents-out-0";
-    
+
     public ServiceEventPublisher(StreamBridge streamBridge) {
         this.streamBridge = streamBridge;
     }
-    
+
     public void publishServiceCreated(ServiceEntity service, String userId) {
-        ServiceEventDto event = createEventDto(service, "CREATED", userId);
-        publishEvent(event, "Service Created");
+        publishEvent(createEventDto(service, "CREATED", userId),
+                     "Service Created", "serviceCreated-out-0");
     }
-    
+
     public void publishServiceUpdated(ServiceEntity service, String userId) {
-        ServiceEventDto event = createEventDto(service, "UPDATED", userId);
-        publishEvent(event, "Service Updated");
+        publishEvent(createEventDto(service, "UPDATED", userId),
+                     "Service Updated", "serviceUpdated-out-0");
     }
-    
+
     public void publishServiceDeleted(ServiceEntity service, String userId) {
-        ServiceEventDto event = createEventDto(service, "DELETED", userId);
-        publishEvent(event, "Service Deleted");
+        publishEvent(createEventDto(service, "DELETED", userId),
+                     "Service Deleted", "serviceDeleted-out-0");
     }
-    
-    public void publishEvent(ServiceEventDto event) {
-        publishEvent(event, "Service Event");
-    }
-    
+
     private ServiceEventDto createEventDto(ServiceEntity service, String eventType, String userId) {
         return new ServiceEventDto(
             service.getId(),
@@ -57,30 +48,27 @@ public class ServiceEventPublisher {
             userId
         );
     }
-    
-    private void publishEvent(ServiceEventDto event, String eventDescription) {
+
+    private void publishEvent(ServiceEventDto event, String eventDescription, String bindingName) {
         try {
-            // Create message with headers for better tracking
             Message<ServiceEventDto> message = MessageBuilder
                 .withPayload(event)
                 .setHeader("eventType", event.getEventType())
                 .setHeader("serviceId", event.getServiceId().toString())
                 .setHeader("timestamp", System.currentTimeMillis())
                 .build();
-            
-            // Send using StreamBridge with binding name
-            boolean sent = streamBridge.send(BINDING_NAME, message);
-            
+
+            boolean sent = streamBridge.send(bindingName, message);
+
             if (sent) {
-                logger.info("{} event published successfully to binding '{}' -> topic '{}' for service ID '{}' with event type '{}'", 
-                    eventDescription, BINDING_NAME, bindingDestination, event.getServiceId(), event.getEventType());
+                logger.info("{} published to binding '{}' for service ID '{}' (eventType={})",
+                        eventDescription, bindingName, event.getServiceId(), event.getEventType());
             } else {
-                logger.warn("Failed to publish {} event to binding '{}' for service ID '{}'", 
-                    eventDescription, BINDING_NAME, event.getServiceId());
+                logger.warn("Failed to publish {} to binding '{}' for service ID '{}'",
+                        eventDescription, bindingName, event.getServiceId());
             }
-            
         } catch (Exception e) {
-            logger.error("Error publishing {} event to Spring Cloud Stream: {}", eventDescription, e.getMessage(), e);
+            logger.error("Error publishing {} event to binding '{}': {}", eventDescription, bindingName, e.getMessage(), e);
         }
     }
 }
