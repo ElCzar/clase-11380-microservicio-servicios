@@ -3,7 +3,7 @@
 ### Puerto: 8080
 
 # Variables de entorno
-@baseUrl = http://localhost:8080
+@baseUrl = http://localhost:8083
 @keycloakUrl = http://localhost:8180
 @realm = microservices-ecosystem
 @client_id = perfil-service
@@ -64,11 +64,9 @@ Content-Type: application/json
   "title": "Desarrollo Web Profesional",
   "description": "Servicios de desarrollo web",
   "price": 299.99,
-  "category": { "id": "550e8400-e29b-41d4-a716-446655449999" }, 
-  "providerId": "550e8400-e29b-41d4-a716-446655440001",
-  "isActive": true,
   "averageRating": 4.5
 }
+
 
 
 ###
@@ -83,9 +81,6 @@ Content-Type: application/json
   "title": "Desarrollo de Apps Móviles",
   "description": "Desarrollo de aplicaciones nativas y multiplataforma para iOS y Android",
   "price": 499.99,
-  "category": "TECHNOLOGY", 
-  "providerId": "550e8400-e29b-41d4-a716-446655440002",
-  "isActive": true,
   "averageRating": 4.8
 }
 
@@ -101,11 +96,25 @@ Content-Type: application/json
   "title": "Consultoría en Tecnología",
   "description": "Asesoramiento especializado en arquitectura de software y transformación digital",
   "price": 150.00,
-  "category": "BUSINESS",
-  "providerId": "550e8400-e29b-41d4-a716-446655440003",
-  "isActive": true,
   "averageRating": 4.9
 }
+
+
+### 7. Actualizar precio y descripción del servicio web
+# @name updateWebService
+
+PUT {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Desarrollo Web Profesional - ACTUALIZADO",
+  "description": "Servicios premium de desarrollo web con tecnologías de última generación y soporte completo",
+  "price": 349.99,
+  "averageRating": 4.7
+}
+
+
 
 ###
 
