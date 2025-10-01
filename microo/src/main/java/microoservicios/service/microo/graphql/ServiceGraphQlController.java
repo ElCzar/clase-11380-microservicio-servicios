@@ -19,7 +19,7 @@ public class ServiceGraphQlController {
     }
 
     @QueryMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("authenticated")
     public List<ServiceEntity> services(@Argument String title,
                                         @Argument Double minPrice,
                                         @Argument Double maxPrice) {
@@ -28,7 +28,7 @@ public class ServiceGraphQlController {
 
 
     @QueryMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("authenticated()")
     public ServiceEntity serviceById(@Argument String id) {
         return repository.findById(java.util.UUID.fromString(id)).orElse(null);
     }
