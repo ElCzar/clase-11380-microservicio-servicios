@@ -45,6 +45,7 @@ Content-Type: application/json
 # Salud del servicio
 GET {{ baseUrl }}/api/v1/services/health
 Authorization: {{ authToken }}
+Content-Type: application/json
 ###
 
 
