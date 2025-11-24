@@ -1,4 +1,4 @@
-package microoservicios.service.microo.dto.deserializer;
+package microoservicios.service.microo.dto;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -10,12 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-/**
- * Deserializador flexible para LocalDateTime que maneja múltiples formatos de
- * fecha
- * Soporta formatos con y sin microsegundos/nanosegundos
- */
-public class FlexibleLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+// Deserializador para múltiples formatos de fecha
+public class DateDeserializer extends JsonDeserializer<LocalDateTime> {
 
     private static final DateTimeFormatter FLEXIBLE_FORMATTER = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd'T'HH:mm:ss")

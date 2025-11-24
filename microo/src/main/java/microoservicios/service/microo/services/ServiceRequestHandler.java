@@ -1,9 +1,9 @@
-package microoservicios.service.microo.service;
+package microoservicios.service.microo.services;
 
 import microoservicios.service.microo.dto.kafka.ServiceRequestDto;
 import microoservicios.service.microo.dto.kafka.ServiceResponseDto;
 import microoservicios.service.microo.entity.ServiceEntity;
-import microoservicios.service.microo.services.MarketPlaceService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;

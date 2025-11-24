@@ -28,20 +28,15 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    /**
-     * Procesa un comentario recibido desde Kafka y actualiza el rating promedio del
-     * servicio
-     */
+    // Procesa el comentario recibido desde Kafka 
     @Transactional
     public void processCommentAndUpdateRating(CommentResponseDto commentDto) {
         try {
-            // Verificar si el comentario ya fue procesado (evitar duplicados)
             if (commentRepository.existsByCommentId(commentDto.getCommentId())) {
                 logger.info("Comment {} already processed, skipping", commentDto.getCommentId());
                 return;
             }
 
-            // Obtener el UUID del servicio directamente del DTO
             UUID serviceUuid = commentDto.getServiceId();
             if (serviceUuid == null) {
                 logger.error("Invalid serviceUuid in comment {}: {}", commentDto.getCommentId(),
@@ -49,7 +44,6 @@ public class CommentService {
                 throw new RuntimeException("Invalid or missing serviceUuid");
             }
 
-            // Guardar el comentario en la base de datos
             Comment comment = new Comment(
                     commentDto.getCommentId(),
                     serviceUuid,
@@ -60,20 +54,16 @@ public class CommentService {
             commentRepository.save(comment);
             logger.info("Saved comment {} for service {}", commentDto.getCommentId(), serviceUuid);
 
-            // Buscar el servicio
             ServiceEntity service = serviceRepository.findById(serviceUuid)
                     .orElseThrow(() -> new RuntimeException(
                             "Service not found with UUID: " + serviceUuid));
 
-            // Obtener datos actuales del servicio
             Double currentRating = service.getAverageRating() != null ? service.getAverageRating() : 0.0;
             Integer currentCount = service.getCommentCount() != null ? service.getCommentCount() : 0;
             BigDecimal newRating = commentDto.getRating();
 
-            // Calcular el nuevo promedio usando el conteo
             Double updatedRating = calculateNewAverageRating(currentRating, currentCount, newRating);
 
-            // Actualizar el rating y el contador del servicio
             service.setAverageRating(updatedRating);
             service.setCommentCount(currentCount + 1);
             serviceRepository.save(service);
@@ -88,36 +78,24 @@ public class CommentService {
         }
     }
 
-    /**
-     * Obtiene todos los comentarios de un servicio específico
-     */
+    // Obtiene todos los comentarios de un servicio específico
     public List<Comment> getCommentsByServiceId(UUID serviceId) {
         return commentRepository.findByServiceIdOrderByCreatedAtDesc(serviceId);
     }
 
-    /**
-     * Cuenta los comentarios de un servicio
-     */
+    // Cuenta los comentarios de un servicio
     public long countCommentsByServiceId(UUID serviceId) {
         return commentRepository.countByServiceId(serviceId);
     }
 
-    /**
-     * Calcula el nuevo rating promedio del servicio usando la fórmula:
-     * nuevo_promedio = (promedio_actual * cantidad_actual + nuevo_rating) /
-     * (cantidad_actual + 1)
-     */
     private Double calculateNewAverageRating(Double currentRating, Integer currentCount, BigDecimal newRating) {
         if (currentCount == 0 || currentRating == 0.0) {
-            // Primer comentario
             return newRating.doubleValue();
         }
 
-        // Calcular promedio ponderado
         BigDecimal currentRatingBd = BigDecimal.valueOf(currentRating);
         BigDecimal currentCountBd = BigDecimal.valueOf(currentCount);
 
-        // (currentRating * currentCount + newRating) / (currentCount + 1)
         BigDecimal totalRating = currentRatingBd.multiply(currentCountBd).add(newRating);
         BigDecimal newCount = currentCountBd.add(BigDecimal.ONE);
         BigDecimal average = totalRating.divide(newCount, 2, RoundingMode.HALF_UP);

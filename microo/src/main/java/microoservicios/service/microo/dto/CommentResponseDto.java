@@ -2,7 +2,6 @@ package microoservicios.service.microo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import microoservicios.service.microo.dto.deserializer.FlexibleLocalDateTimeDeserializer;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,10 +13,10 @@ public class CommentResponseDto {
     private Long commentId;
 
     @JsonProperty("serviceUuid")
-    private String serviceUuid; // UUID del servicio como String
+    private String serviceUuid; 
 
     @JsonProperty("serviceIdHash")
-    private Long serviceIdHash; // Hash numérico del serviceId (si es necesario)
+    private Long serviceIdHash; 
 
     @JsonProperty("profileId")
     private Long profileId;
@@ -29,7 +28,7 @@ public class CommentResponseDto {
     private String content;
 
     @JsonProperty("createdAt")
-    @JsonDeserialize(using = FlexibleLocalDateTimeDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
     private LocalDateTime createdAt;
 
     // Constructors
@@ -47,7 +46,6 @@ public class CommentResponseDto {
         this.createdAt = createdAt;
     }
 
-    // Getters and Setters
     public Long getCommentId() {
         return commentId;
     }
@@ -64,10 +62,6 @@ public class CommentResponseDto {
         this.serviceUuid = serviceUuid;
     }
 
-    /**
-     * Convierte el serviceUuid String a UUID
-     * Este es el ID del servicio que usamos internamente
-     */
     public UUID getServiceId() {
         if (serviceUuid == null || serviceUuid.trim().isEmpty()) {
             return null;

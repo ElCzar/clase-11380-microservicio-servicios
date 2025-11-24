@@ -14,7 +14,7 @@ public class Comment {
     private Long id;
 
     @Column(name = "comment_id", nullable = false)
-    private Long commentId; // ID del comentario en el microservicio de comentarios
+    private Long commentId;
 
     @Column(name = "service_id", nullable = false)
     private UUID serviceId;

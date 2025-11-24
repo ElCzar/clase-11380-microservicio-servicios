@@ -130,7 +130,7 @@ Content-Type: application/json
 ### 7. Actualizar precio y descripción del servicio web
 # @name updateWebService
 
-PUT {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+PUT {{baseUrl}}/api/v1/services/{{ createWebService.response.body.id }}
 Authorization: {{authToken}}
 Content-Type: application/json
 
@@ -157,22 +157,45 @@ Authorization: {{authToken}}
 #########################################################################
 
 ### 8. Obtener servicio web por ID
-GET {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+GET {{baseUrl}}/api/v1/services/{{ createWebService.response.body.id }}
 Authorization: {{authToken}}
 
 ###
 
 ### 9. Obtener servicio móvil por ID
-GET {{baseUrl}}/api/v1/services/{{createMobileService.response.body.id}}
+GET {{baseUrl}}/api/v1/services/{{ createMobileService.response.body.id }}
 Authorization: {{authToken}}
 
 ###
 
 ### 10. Obtener servicio de consultoría por ID
-GET {{baseUrl}}/api/v1/services/{{createConsultingService.response.body.id}}
+GET {{baseUrl}}/api/v1/services/{{ createConsultingService.response.body.id }}
 Authorization: {{authToken}}
 
 ###
+
+# ------------------------------------------------
+# Verificar comentarios de un servicio específico
+# ------------------------------------------------
+
+@serviceId = 7dd565d2-d195-4d94-8d23-8de0bd78c5e1
+
+### Obtener un servicio específico por ID
+# @name getServiceById
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}
+Authorization: {{ keycloakToken }}
+
+
+### Obtiene todos los comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments
+Authorization: {{ keycloakToken }}
+
+###
+
+### Obtiene el conteo de comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments/count
+Authorization: {{ keycloakToken }}
+
 
 #########################################################################
 # SECCIÓN 5: ACTUALIZAR SERVICIOS
@@ -180,7 +203,7 @@ Authorization: {{authToken}}
 
 ### 11. Actualizar precio y descripción del servicio web
 # @name updateWebService
-PUT {{baseUrl}}/api/v1/services/{{createWebService.response.body.id}}
+PUT {{baseUrl}}/api/v1/services/{{ createWebService.response.body.id }}
 Authorization: {{authToken}}
 Content-Type: application/json
 

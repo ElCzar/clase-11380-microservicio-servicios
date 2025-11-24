@@ -1,5 +1,5 @@
 
-### 2.2: Login with Provider
+### Login de un Proveedor
 # @name loginProvider
 POST http://localhost:8081/auth/login
 Content-Type: application/json
@@ -11,7 +11,7 @@ Content-Type: application/json
 
 ###
 
-### 1.2: Register a Provider (with additional provider fields)
+### 1.2: Registro de un Proveedor
 # @name registerProvider
 POST http://localhost:8081/auth/register/provider
 Content-Type: application/json
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 # Variables de entorno
 @baseUrl = http://localhost:8083
-# Use Keycloak token
+# Keycloak token
 @keycloakToken = Bearer {{ loginProvider.response.body.accessToken }}
 
 ###
@@ -92,99 +92,24 @@ Content-Type: application/json
 
 ###
 
-### Obtener todos los servicios (con rating y cantidad de comentarios)
+### Obtener todos los servicios 
 GET {{ baseUrl }}/api/v1/services
 Authorization: {{ keycloakToken }}
 
-###
+@serviceId = da545479-72b3-438d-95fd-fda1842e7367
 
-### Obtener un servicio específico por ID (incluye commentCount)
+### Obtener un servicio específico por ID
 # @name getServiceById
-GET {{ baseUrl }}/api/v1/services/4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}
+Authorization: {{ keycloakToken }}
+
+
+### Obtiene todos los comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments
 Authorization: {{ keycloakToken }}
 
 ###
 
-### Consultar servicio después de recibir comentarios
-# Después de que el microservicio de comentarios envíe mensajes a Kafka,
-# este endpoint mostrará el averageRating y commentCount actualizados
-GET {{ baseUrl }}/api/v1/services/4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f
+### Obtiene el conteo de comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments/count
 Authorization: {{ keycloakToken }}
-
-### Ejemplo de respuesta esperada:
-# {
-#   "id": "550e8400-e29b-41d4-a716-446655440001",
-#   "title": "Servicio",
-#   "description": "Descripción del servicio",
-#   "price": 100.0,
-#   "averageRating": 4.5,
-#   "commentCount": 3,
-#   "comments": [
-#     {
-#       "commentId": 123,
-#       "serviceId": 123456789,
-#       "profileId": 456,
-#       "rating": 5.0,
-#       "content": "Excelente servicio!",
-#       "createdAt": "2025-11-24T10:30:45.123"
-#     },
-#     {
-#       "commentId": 124,
-#       "serviceId": 123456789,
-#       "profileId": 789,
-#       "rating": 4.0,
-#       "content": "Muy bueno",
-#       "createdAt": "2025-11-24T11:15:30.789"
-#     }
-#   ],
-#   "categoryId": "550e8400-e29b-41d4-a716-446655440000",
-#   "categoryName": "Categoría Ejemplo",
-#   "statusId": "550e8400-e29b-41d4-a716-446655440002",
-#   "statusName": "Disponible",
-#   "countryId": "550e8400-e29b-41d4-a716-446655440003",
-#   "countryName": "País Ejemplo"
-# }
-
-###
-
-### ==================== CONSULTA DE COMENTARIOS ====================
-
-### Obtener todos los comentarios de un servicio
-# Este endpoint retorna todos los comentarios que han llegado desde Kafka
-# para un servicio específico
-GET {{ baseUrl }}/api/v1/services/20338a9e-628e-4146-8787-2e805eb15dd5/comments
-Authorization: {{ keycloakToken }}
-
-###
-
-### Obtener el conteo de comentarios de un servicio
-GET {{ baseUrl }}/api/v1/services/20338a9e-628e-4146-8787-2e805eb15dd5/comments/count
-Authorization: {{ keycloakToken }}
-
-###
-
-### Ejemplo de respuesta de comentarios:
-# [
-#   {
-#     "id": 1,
-#     "commentId": 123,
-#     "serviceId": "550e8400-e29b-41d4-a716-446655440001",
-#     "profileId": 456,
-#     "rating": 4.5,
-#     "content": "Excelente servicio, muy recomendado",
-#     "createdAt": "2025-11-24T10:30:45.123",
-#     "receivedAt": "2025-11-24T10:31:00.456"
-#   },
-#   {
-#     "id": 2,
-#     "commentId": 124,
-#     "serviceId": "550e8400-e29b-41d4-a716-446655440001",
-#     "profileId": 789,
-#     "rating": 5.0,
-#     "content": "Perfecto, superó mis expectativas",
-#     "createdAt": "2025-11-24T11:15:30.789",
-#     "receivedAt": "2025-11-24T11:15:45.123"
-#   }
-# ]
-
-###

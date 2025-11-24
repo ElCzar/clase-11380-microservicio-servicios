@@ -74,7 +74,6 @@ public class ServiceController {
 
         String userId = (auth != null) ? auth.getName() : "system";
 
-        // Convertimos cada entidad en un DTO de evento
         List<ServiceEventDto> events = services.stream()
                 .map(service -> new ServiceEventDto(
                         service.getId(),
@@ -88,7 +87,7 @@ public class ServiceController {
 
         eventPublisher.publishEvents(events);
 
-        return ResponseEntity.ok("✅ Se publicaron " + events.size() + " servicios en Kafka.");
+        return ResponseEntity.ok("Se publicaron " + events.size() + " servicios en Kafka.");
     }
 
     @PutMapping("/{id}")
