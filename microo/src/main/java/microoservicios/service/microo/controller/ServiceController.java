@@ -1,10 +1,12 @@
 package microoservicios.service.microo.controller;
 
+import microoservicios.service.microo.dto.CommentResponseDto;
 import microoservicios.service.microo.dto.ServiceRequestDto;
 import microoservicios.service.microo.dto.ServiceResponseDto;
 import microoservicios.service.microo.dto.ServiceEventDto;
 import microoservicios.service.microo.entity.*;
 import microoservicios.service.microo.kafka.ServiceEventPublisher;
+import microoservicios.service.microo.services.CommentService;
 import microoservicios.service.microo.services.MarketPlaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +22,13 @@ public class ServiceController {
 
     private final MarketPlaceService marketPlaceService;
     private final ServiceEventPublisher eventPublisher;
+    private final CommentService commentService;
 
-    public ServiceController(MarketPlaceService marketPlaceService, ServiceEventPublisher eventPublisher) {
+    public ServiceController(MarketPlaceService marketPlaceService, ServiceEventPublisher eventPublisher,
+            CommentService commentService) {
         this.marketPlaceService = marketPlaceService;
         this.eventPublisher = eventPublisher;
+        this.commentService = commentService;
     }
 
     @GetMapping("/health")
@@ -39,7 +44,7 @@ public class ServiceController {
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
         for (ServiceResponseDto service : services) {
-            //publishEvent(service, "CREATED", auth);
+            // publishEvent(service, "CREATED", auth);
             System.out.println("Service: " + service.getId() + " - " + service.getTitle());
         }
 
@@ -69,7 +74,6 @@ public class ServiceController {
 
         String userId = (auth != null) ? auth.getName() : "system";
 
-        // Convertimos cada entidad en un DTO de evento
         List<ServiceEventDto> events = services.stream()
                 .map(service -> new ServiceEventDto(
                         service.getId(),
@@ -78,20 +82,18 @@ public class ServiceController {
                         service.getPrice() != null ? service.getPrice().doubleValue() : null,
                         service.getAverageRating(),
                         "PUBLISH_ALL",
-                        userId
-                ))
+                        userId))
                 .toList();
 
-            eventPublisher.publishEvents(events);
+        eventPublisher.publishEvents(events);
 
-            return ResponseEntity.ok("✅ Se publicaron " + events.size() + " servicios en Kafka.");
-        }
-
+        return ResponseEntity.ok("Se publicaron " + events.size() + " servicios en Kafka.");
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponseDto> updateService(@PathVariable UUID id,
-                                                            @RequestBody ServiceRequestDto dto,
-                                                            Authentication auth) {
+            @RequestBody ServiceRequestDto dto,
+            Authentication auth) {
         ServiceEntity entity = fromRequestDto(dto);
         Optional<ServiceEntity> updated = marketPlaceService.update(id, entity);
 
@@ -127,8 +129,7 @@ public class ServiceController {
                 service.getPrice() != null ? service.getPrice().doubleValue() : null,
                 service.getAverageRating(),
                 action,
-                userId
-        );
+                userId);
         eventPublisher.publishEvent(event);
     }
 
@@ -139,6 +140,14 @@ public class ServiceController {
         dto.setDescription(entity.getDescription());
         dto.setPrice(entity.getPrice());
         dto.setAverageRating(entity.getAverageRating());
+        dto.setCommentCount(entity.getCommentCount() != null ? entity.getCommentCount() : 0);
+
+        // Obtener y agregar comentarios del servicio
+        List<Comment> comments = commentService.getCommentsByServiceId(entity.getId());
+        List<CommentResponseDto> commentDtos = comments.stream()
+                .map(this::convertCommentToDto)
+                .collect(Collectors.toList());
+        dto.setComments(commentDtos);
 
         if (entity.getCategory() != null) {
             dto.setCategoryId(entity.getCategory().getId());
@@ -152,6 +161,17 @@ public class ServiceController {
             dto.setCountryId(entity.getCountry().getId());
             dto.setCountryName(entity.getCountry().getName());
         }
+        return dto;
+    }
+
+    private CommentResponseDto convertCommentToDto(Comment comment) {
+        CommentResponseDto dto = new CommentResponseDto();
+        dto.setCommentId(comment.getCommentId());
+        dto.setServiceUuid(String.valueOf(comment.getServiceId()));
+        dto.setProfileId(comment.getProfileId());
+        dto.setRating(comment.getRating());
+        dto.setContent(comment.getContent());
+        dto.setCreatedAt(comment.getCreatedAt());
         return dto;
     }
 

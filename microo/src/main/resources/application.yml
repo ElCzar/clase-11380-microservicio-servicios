@@ -34,10 +34,22 @@ spring:
   # Kafka bootstrap servers
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: services-comment-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   
-  # Kafka Configuration with Spring Cloud Stream (matching orden-pago)
+  # Kafka Configuration with Spring Cloud Stream (for orden-pago communication only)
   cloud:
     stream:
+      # Only serviceRequest uses Spring Cloud Stream
+      function:
+        definition: serviceRequest
       kafka:
         binder:
           brokers: ${SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS:localhost:9092}
@@ -110,10 +122,22 @@ kafka:
     service-request: service-request-topic
     service-response: service-response-topic
 
-# Logging configuration for debugging JWT issues
+# Logging configuration for debugging JWT issues and Kafka
 logging:
   level:
     "[org.springframework.security]": DEBUG
     "[org.springframework.security.oauth2]": DEBUG
     "[org.springframework.security.web]": DEBUG
+    "[org.springframework.cloud.stream]": DEBUG
+    "[org.springframework.kafka]": DEBUG
+    "[org.springframework.integration]": DEBUG
+    "[microoservicios.service.microo.kafka]": DEBUG
 
+# External API Configuration
+external:
+  api:
+    geoapify:
+      api-key: ${GEOAPIFY_API_KEY:your-api-key-here}
+      base-url: https://api.geoapify.com/v1
+    openmeteo:
+      base-url: https://api.open-meteo.com/v1

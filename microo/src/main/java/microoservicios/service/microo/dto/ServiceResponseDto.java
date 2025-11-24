@@ -1,6 +1,7 @@
 package microoservicios.service.microo.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 public class ServiceResponseDto {
@@ -9,6 +10,8 @@ public class ServiceResponseDto {
     private String description;
     private BigDecimal price;
     private Double averageRating;
+    private Integer commentCount;
+    private List<CommentResponseDto> comments;
 
     private UUID categoryId;
     private String categoryName;
@@ -20,38 +23,108 @@ public class ServiceResponseDto {
     private String countryName;
 
     // Getters y setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getTitle() {
+        return title;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public Double getAverageRating() { return averageRating; }
-    public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
+    public String getDescription() {
+        return description;
+    }
 
-    public UUID getCategoryId() { return categoryId; }
-    public void setCategoryId(UUID categoryId) { this.categoryId = categoryId; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getCategoryName() { return categoryName; }
-    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-    public UUID getStatusId() { return statusId; }
-    public void setStatusId(UUID statusId) { this.statusId = statusId; }
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
-    public String getStatusName() { return statusName; }
-    public void setStatusName(String statusName) { this.statusName = statusName; }
+    public Double getAverageRating() {
+        return averageRating;
+    }
 
-    public UUID getCountryId() { return countryId; }
-    public void setCountryId(UUID countryId) { this.countryId = countryId; }
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
 
-    public String getCountryName() { return countryName; }
-    public void setCountryName(String countryName) { this.countryName = countryName; }
+    public Integer getCommentCount() {
+        return commentCount;
+    }
 
-    
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public List<CommentResponseDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentResponseDto> comments) {
+        this.comments = comments;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public UUID getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(UUID statusId) {
+        this.statusId = statusId;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public UUID getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(UUID countryId) {
+        this.countryId = countryId;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
 }

@@ -1,17 +1,17 @@
 
-### 2.2: Login with Provider
+### Login de un Proveedor
 # @name loginProvider
 POST http://localhost:8081/auth/login
 Content-Type: application/json
 
 {
-    "username": "testprovider",
+    "username": "testuser",
     "password": "password123"
 }
 
 ###
 
-### 1.2: Register a Provider (with additional provider fields)
+### 1.2: Registro de un Proveedor
 # @name registerProvider
 POST http://localhost:8081/auth/register/provider
 Content-Type: application/json
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 # Variables de entorno
 @baseUrl = http://localhost:8083
-# Use Keycloak token
+# Keycloak token
 @keycloakToken = Bearer {{ loginProvider.response.body.accessToken }}
 
 ###
@@ -91,3 +91,25 @@ Content-Type: application/json
 }
 
 ###
+
+### Obtener todos los servicios 
+GET {{ baseUrl }}/api/v1/services
+Authorization: {{ keycloakToken }}
+
+@serviceId = da545479-72b3-438d-95fd-fda1842e7367
+
+### Obtener un servicio específico por ID
+# @name getServiceById
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}
+Authorization: {{ keycloakToken }}
+
+
+### Obtiene todos los comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments
+Authorization: {{ keycloakToken }}
+
+###
+
+### Obtiene el conteo de comentarios de un servicio específico
+GET {{ baseUrl }}/api/v1/services/{{serviceId}}/comments/count
+Authorization: {{ keycloakToken }}
