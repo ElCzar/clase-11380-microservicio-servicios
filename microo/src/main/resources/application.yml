@@ -137,7 +137,7 @@ logging:
 external:
   api:
     geoapify:
-      api-key: ${GEOAPIFY_API_KEY:your-api-key-here}
+      api-key: 4cad0942d0e3418fb90584b0c11e3cdd
       base-url: https://api.geoapify.com/v1
     openmeteo:
       base-url: https://api.open-meteo.com/v1
