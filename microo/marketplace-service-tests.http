@@ -323,5 +323,179 @@ Content-Type: application/json
 }
 
 ###
+
+#########################################################################
+# SECCIÓN 8: GEOAPIFY API - LOCATION SERVICES
+#########################################################################
+
+### 23. Geocode an address (Convert address to coordinates)
+# @name geocodeAddress
+GET {{baseUrl}}/api/v1/location/geocode?address=Madrid, Spain
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 24. Geocode address - Barcelona
+# @name geocodeBarcelona
+GET {{baseUrl}}/api/v1/location/geocode?address=Barcelona, Spain
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 25. Geocode address - New York
+# @name geocodeNewYork
+GET {{baseUrl}}/api/v1/location/geocode?address=New York, USA
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 26. Reverse geocode (Convert coordinates to address)
+# @name reverseGeocode
+GET {{baseUrl}}/api/v1/location/reverse-geocode?lat=40.4168&lon=-3.7038
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 27. Reverse geocode - Paris coordinates
+# @name reverseGeocodeParis
+GET {{baseUrl}}/api/v1/location/reverse-geocode?lat=48.8566&lon=2.3522
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 28. Search for places - Restaurants in Barcelona
+# @name searchPlacesRestaurants
+GET {{baseUrl}}/api/v1/location/places?query=restaurants in Barcelona
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 29. Search for places - Hotels in Madrid
+# @name searchPlacesHotels
+GET {{baseUrl}}/api/v1/location/places?query=hotels in Madrid
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 30. Search for places - Museums in Paris
+# @name searchPlacesMuseums
+GET {{baseUrl}}/api/v1/location/places?query=museums in Paris
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+#########################################################################
+# SECCIÓN 9: OPEN-METEO API - WEATHER SERVICES
+#########################################################################
+
+### 31. Get current weather for Madrid coordinates
+# @name getCurrentWeatherMadrid
+GET {{baseUrl}}/api/v1/weather/current?lat=40.4168&lon=-3.7038
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 32. Get current weather for Barcelona
+# @name getCurrentWeatherBarcelona
+GET {{baseUrl}}/api/v1/weather/current?lat=41.3851&lon=2.1734
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 33. Get current weather for New York
+# @name getCurrentWeatherNewYork
+GET {{baseUrl}}/api/v1/weather/current?lat=40.7128&lon=-74.0060
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 34. Get weather forecast - Madrid (7 days default)
+# @name getForecastMadrid
+GET {{baseUrl}}/api/v1/weather/forecast?lat=40.4168&lon=-3.7038&days=7
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 35. Get weather forecast - Barcelona (3 days)
+# @name getForecastBarcelona
+GET {{baseUrl}}/api/v1/weather/forecast?lat=41.3851&lon=2.1734&days=3
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 36. Get weather forecast - Paris (14 days)
+# @name getForecastParis
+GET {{baseUrl}}/api/v1/weather/forecast?lat=48.8566&lon=2.3522&days=14
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 37. Get hourly weather forecast - Madrid (48 hours default)
+# @name getHourlyForecastMadrid
+GET {{baseUrl}}/api/v1/weather/hourly?lat=40.4168&lon=-3.7038&hours=48
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 38. Get hourly weather forecast - Barcelona (24 hours)
+# @name getHourlyForecastBarcelona
+GET {{baseUrl}}/api/v1/weather/hourly?lat=41.3851&lon=2.1734&hours=24
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+### 39. Get hourly weather forecast - New York (72 hours)
+# @name getHourlyForecastNewYork
+GET {{baseUrl}}/api/v1/weather/hourly?lat=40.7128&lon=-74.0060&hours=72
+Authorization: {{authToken}}
+Content-Type: application/json
+
+###
+
+#########################################################################
+# SECCIÓN 10: INTEGRATED WORKFLOW - LOCATION + WEATHER
+#########################################################################
+
+### 40. Complete workflow: Geocode address then get weather
+# Step 1: Geocode an address to get coordinates
+# @name workflowGeocode
+GET {{baseUrl}}/api/v1/location/geocode?address=Paris, France
+Authorization: {{authToken}}
+Content-Type: application/json
+
+# Step 2: Use coordinates from Step 1 to get current weather
+# Note: Replace lat/lon with actual values from geocode response
+# GET {{baseUrl}}/api/v1/weather/current?lat=48.8566&lon=2.3522
+# Authorization: {{authToken}}
+
+###
+
+### 41. Complete workflow: Reverse geocode then get forecast
+# Step 1: Reverse geocode coordinates to get address
+# @name workflowReverseGeocode
+GET {{baseUrl}}/api/v1/location/reverse-geocode?lat=40.4168&lon=-3.7038
+Authorization: {{authToken}}
+Content-Type: application/json
+
+# Step 2: Get weather forecast for the same coordinates
+# GET {{baseUrl}}/api/v1/weather/forecast?lat=40.4168&lon=-3.7038&days=7
+# Authorization: {{authToken}}
+
 ###
 
