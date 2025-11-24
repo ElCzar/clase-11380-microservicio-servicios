@@ -31,12 +31,16 @@ spring:
           #issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
+  # Kafka bootstrap servers
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  
   # Kafka Configuration with Spring Cloud Stream (matching orden-pago)
   cloud:
     stream:
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: ${SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS:localhost:9092}
           auto-create-topics: true
           configuration:
             "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
