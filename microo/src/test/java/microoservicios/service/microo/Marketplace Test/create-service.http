@@ -1,13 +1,15 @@
 
-### ### Login with Basic User
-# @name loginUser
+### 2.2: Login with Provider
+# @name loginProvider
 POST http://localhost:8081/auth/login
 Content-Type: application/json
 
 {
-  "username": "testprovider",
-  "password": "password123"
+    "username": "testprovider",
+    "password": "password123"
 }
+
+###
 
 ### 1.2: Register a Provider (with additional provider fields)
 # @name registerProvider
@@ -33,7 +35,8 @@ Content-Type: application/json
 
 # Variables de entorno
 @baseUrl = http://localhost:8083
-@authToken = Bearer {{ loginUser.response.body.accessToken }}
+# Use Keycloak token
+@keycloakToken = Bearer {{ loginProvider.response.body.accessToken }}
 
 ###
 
@@ -44,14 +47,14 @@ Content-Type: application/json
 ###
 # Salud del servicio
 GET {{ baseUrl }}/api/v1/services/health
-Authorization: {{ authToken }}
-Content-Type: application/json
+Authorization: {{ keycloakToken }}
+
 ###
 
 
-# Crear servicio
+### Crear servicio
 POST {{ baseUrl }}/api/v1/services
-Authorization: {{ authToken }}
+Authorization: {{ keycloakToken }}
 Content-Type: application/json
 
 {
@@ -86,3 +89,5 @@ Content-Type: application/json
     ]
 
 }
+
+###
