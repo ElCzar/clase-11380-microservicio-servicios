@@ -21,6 +21,9 @@ public class ServiceEntity {
 
     private Double averageRating;
 
+    @Column(name = "comment_count")
+    private Integer commentCount = 0;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -37,7 +40,8 @@ public class ServiceEntity {
     private List<Image> images = new ArrayList<>();
 
     // Constructors
-    public ServiceEntity() {}
+    public ServiceEntity() {
+    }
 
     // Getters and Setters
     public UUID getId() {
@@ -78,6 +82,14 @@ public class ServiceEntity {
 
     public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
     }
 
     public Category getCategory() {
