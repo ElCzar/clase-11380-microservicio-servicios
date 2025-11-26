@@ -17,6 +17,10 @@ public class Country {
     // Constructors
     public Country() {}
 
+    public Country(String name) {
+        this.name = name;
+    }
+
     // Getters and Setters
     public UUID getId() {
         return id;
