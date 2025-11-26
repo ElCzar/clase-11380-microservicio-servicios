@@ -1,11 +1,17 @@
 package microoservicios.service.microo.dto;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import static org.junit.jupiter.api.Assertions.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "KAFKA_BOOTSTRAP_SERVERS=embedded",
+    "KAFKA_BROKERS=embedded"
+})
 class ServiceEventDtoTest {
 
     @Test
@@ -19,7 +25,7 @@ class ServiceEventDtoTest {
         dto.setServiceId(serviceId);
         dto.setTitle("Test Title");
         dto.setDescription("Test Description");
-        dto.setPrice(new BigDecimal("200.00"));  // Keep BigDecimal but check DTO
+        dto.setPrice(200.00);  // Use Double instead of BigDecimal
         dto.setAverageRating(4.8);
         dto.setEventType("CREATED");
         dto.setTimestamp(now);
@@ -29,7 +35,7 @@ class ServiceEventDtoTest {
         assertEquals(serviceId, dto.getServiceId());
         assertEquals("Test Title", dto.getTitle());
         assertEquals("Test Description", dto.getDescription());
-        assertEquals(new BigDecimal("200.00"), dto.getPrice());
+        assertEquals(200.00, dto.getPrice());
         assertEquals(4.8, dto.getAverageRating());
         assertEquals("CREATED", dto.getEventType());
         assertEquals(now, dto.getTimestamp());
