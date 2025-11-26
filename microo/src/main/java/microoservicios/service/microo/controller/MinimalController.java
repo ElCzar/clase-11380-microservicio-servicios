@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class MinimalController {
 
-     @GetMapping("/health")
+    @GetMapping("/health")
+    @PreAuthorize("permitAll()")
     public String health() {
         return "Service is running";
     }
