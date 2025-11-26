@@ -1,6 +1,6 @@
 # Multi-stage build for optimized image
 # Stage 1: Build the application
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM eclipse-temurin:21e AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN mvn clean package -DskipTests && \
     mv target/*.jar app.jar
 
 # Stage 2: Runtime image
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21
 
 WORKDIR /app
 

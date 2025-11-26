@@ -29,11 +29,11 @@ spring:
       resourceserver:
         jwt:
           #issuer-uri: http://localhost:8180/realms/microservices-ecosystem
-          jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+          jwk-set-uri: http://10.43.103.30:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
   # Kafka bootstrap servers
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:10.43.103.40:9092}
     consumer:
       group-id: services-comment-consumer-group
       auto-offset-reset: earliest
@@ -52,7 +52,7 @@ spring:
         definition: serviceRequest
       kafka:
         binder:
-          brokers: ${SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS:localhost:9092}
+          brokers: ${SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS:10.43.103.40:9092}
           auto-create-topics: true
           configuration:
             "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
@@ -89,7 +89,7 @@ spring:
 # Keycloak Configuration
 keycloak:
   realm: microservices-ecosystem
-  auth-server-url: http://localhost:8180
+  auth-server-url: http://10.43.103.30:8180
   ssl-required: none
   resource: servicios-service
   credentials:
@@ -101,15 +101,17 @@ keycloak:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://10.43.103.229:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
     enabled: true
-  instance: 
-    prefer-ip-address: true
-    hostname: localhost
-    instance-id: ${spring.application.name}:${server.port}
+  instance:
     health-check-url-path: /actuator/health
+    prefer-ip-address: true
+    ip-address: 10.43.103.229
+    non-secure-port: 8083
+    instance-id: 10.43.103.229:8083
+    hostname: 10.43.103.229
 
 # Kafka Topics Configuration (custom properties for topic names)
 kafka:
