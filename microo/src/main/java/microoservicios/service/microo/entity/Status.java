@@ -17,6 +17,10 @@ public class Status {
     // Constructors
     public Status() {}
 
+    public Status(String name) {
+        this.name = name;
+    }
+
     // Getters and Setters
     public UUID getId() {
         return id;
