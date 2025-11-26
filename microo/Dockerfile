@@ -1,6 +1,6 @@
 # Multi-stage build for optimized image
 # Stage 1: Build the application
-FROM eclipse-temurin:21e AS builder
+FROM eclipse-temurin:21 AS builder
 
 WORKDIR /app
 
