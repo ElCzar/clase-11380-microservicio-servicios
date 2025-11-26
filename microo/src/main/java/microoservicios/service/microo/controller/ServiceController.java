@@ -32,7 +32,7 @@ public class ServiceController {
     }
 
     @GetMapping("/health")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Marketplace Service is running");
     }

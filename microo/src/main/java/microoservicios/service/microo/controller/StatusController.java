@@ -13,6 +13,13 @@ public class StatusController {
     private final StatusRepository statusRepository;
 
     public StatusController(StatusRepository statusRepository) {
+        // Statuses burnt
+        statusRepository.saveAll(Arrays.asList(
+                new Status() {{ setName("Pending"); }},
+                new Status() {{ setName("In Progress"); }},
+                new Status() {{ setName("Completed"); }},
+                new Status() {{ setName("Cancelled"); }}
+        ));
         this.statusRepository = statusRepository;
     }
 
