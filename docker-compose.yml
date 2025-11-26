@@ -37,7 +37,7 @@ services:
     build:
       context: ./microo
       dockerfile: Dockerfile
-    container_name: microservicio_eureka
+    container_name: microservicio_servicios
     network_mode: host
     restart: unless-stopped
 
