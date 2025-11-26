@@ -1,5 +1,5 @@
 server:
-  address: localhost
+  address: 10.43.103.229
   port: 8083
 
 spring:
@@ -28,7 +28,6 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          #issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://10.43.103.30:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
   # Kafka bootstrap servers

@@ -26,7 +26,7 @@ public class KafkaConsumerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerConfig.class);
 
-    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    @Value("${spring.kafka.bootstrap-servers:10.43.103.40:9092}")
     private String bootstrapServers;
 
     @PostConstruct
