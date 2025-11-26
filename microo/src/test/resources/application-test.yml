@@ -1,0 +1,56 @@
+# Test configuration for microservicio-servicios
+# This file overrides application.yml settings for testing
+
+spring:
+  # Use in-memory H2 database for tests
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: false
+  
+  # Disable Kafka for tests
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:embedded}
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKERS:embedded}
+  
+  # Disable security for most tests
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8180/realms/test/protocol/openid-connect/certs}
+
+# Disable Eureka for tests
+eureka:
+  client:
+    enabled: false
+
+# Mock external API configuration using environment variables
+external:
+  api:
+    geoapify:
+      api-key: ${GEOAPIFY_API_KEY:test-api-key}
+      base-url: ${GEOAPIFY_BASE_URL:http://localhost:8089/mock-geoapify}
+    openmeteo:
+      base-url: ${OPENMETEO_BASE_URL:http://localhost:8090/mock-openmeteo}
+
+# Disable debug logging for tests
+logging:
+  level:
+    "[org.springframework.security]": WARN
+    "[org.springframework.kafka]": WARN
+    "[org.springframework.cloud.stream]": WARN
+    root: WARN
