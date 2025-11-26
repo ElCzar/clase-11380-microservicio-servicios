@@ -41,6 +41,10 @@ RUN groupadd -r spring && \
 # Switch to non-root user
 USER spring
 
+# Set environment variables for Kafka
+ENV SPRING_KAFKA_BOOTSTRAP_SERVERS=10.43.103.40:9092
+ENV SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=10.43.103.40:9092
+
 # Expose the port the app runs on
 EXPOSE 8083
 
